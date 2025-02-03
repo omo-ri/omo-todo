@@ -19,6 +19,10 @@ func Init() error {
 
 	config, err := GetConfig()
 
+	if err != nil {
+		return fmt.Errorf("failed to get config: %v", err)
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 

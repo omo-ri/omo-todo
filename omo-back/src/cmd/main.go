@@ -17,6 +17,6 @@ func main() {
 
 	err := application.Run(":" + omoconfig.Port)
 	if err != nil {
-		return
+		log.Fatalf("failed to start server on port %s: %v", omoconfig.Port, err)
 	}
 }
