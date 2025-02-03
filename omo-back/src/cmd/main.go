@@ -9,9 +9,10 @@ import (
 
 func main() {
 	if err := database.Init(); err != nil {
-		log.Fatalf("Failed to connect database: %v", err)
+		log.Fatalf("Failed to start server: %v", err)
 	}
 	defer database.Pool.Close()
+
 	application := app.NewApp()
 
 	err := application.Run(":" + omoconfig.Port)
