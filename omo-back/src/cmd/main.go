@@ -3,17 +3,26 @@ package main
 import (
 	"log"
 	omoconfig "omo-back/src/config"
-	"omo-back/src/database"
-	"omo-back/src/internal/app"
+	dbimpl "omo-back/src/database/impl"
+	omoapp "omo-back/src/internal/app"
+	"omo-back/src/internal/handler"
+	serviceimpl "omo-back/src/internal/service/impl"
 )
 
 func main() {
-	if err := database.Init(); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
-	defer database.Pool.Close()
+	// PostgreSQL
+	postgresService := dbimpl.NewPostgresServiceImpl()
+	defer postgresService.Close()
+	// User
+	userRepository := dbimpl.NewUserRepositoryImpl(postgresService)
+	userService := serviceimpl.NewUserServiceImpl(userRepository)
 
-	application := app.NewApp()
+	// Handler
+	handlers := omoapp.Handlers{
+		AuthHandler: handler.NewAuthHandler(userService),
+	}
+
+	application := omoapp.NewApp(handlers)
 
 	err := application.Run(":" + omoconfig.Port)
 	if err != nil {
